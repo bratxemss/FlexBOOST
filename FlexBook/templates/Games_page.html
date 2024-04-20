@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends 'Main_Page.html' %}
+    {% block head %}
+        {{ block.super }}
+        {% load static %}
+        <style>
+            main {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .game_block {
+                width: 300px;
+                height: 200px;
+                background-size: cover;
+                background-position: center;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                color: #ffffff;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                cursor: pointer;
+                outline: 0 solid transparent;
+            }
+
+            .game_block:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px 5px #A60000;
+            }
+
+            .game_block h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .popup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                z-index: 9999;
+                transition: opacity 0.3s ease;
+            }
+
+            .popup.open {
+                display: block;
+                opacity: 1;
+            }
+
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .dropbtn {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px;
+                font-size: 16px;
+                border: none;
+                cursor: pointer;
+            }
+
+            .dropbtn:hover, .dropbtn:focus {
+                background-color: #3e8e41;
+            }
+
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+
+            }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+
+            .dropdown-content a:hover {
+                background-color: #f1f1f1;
+            }
+
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
+            .dropdown:hover .dropbtn {
+                background-color: #3e8e41;
+            }
+            .selected {
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .game_input_value {
+                margin-bottom: 10px;
+                padding: 10px;
+                font-size: 16px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                width: 100%; /* Ширина поля ввода будет равна ширине родительского элемента */
+                box-sizing: border-box; /* Учитываем границы и отступы внутри размера элемента */
+            }
+
+            /* Стили для placeholder текста */
+            .game_input_value::placeholder {
+                color: #999; /* Цвет placeholder текста */
+            }
+
+            /* Стили для введенного текста */
+            .game_input_value:focus {
+                outline: none; /* Убираем контур фокуса */
+                border-color: #4CAF50; /* Изменяем цвет рамки при фокусе */
+                box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Добавляем тень при фокусе */
+            }
+
+        </style>
+    {% endblock head %}
+</head>
+<body>
+{% block main_content %}
+
+<main>
+    {% for game in Games %}
+        <div id="{{ game.id }}" class="game_block" style="background-image: url('{{ game.game_img }}');">
+            <h2>{{ game.game_name }}</h2>
+        </div>
+        <div id="popup_{{ game.id }}" class="popup">
+            <h2>{{ game.game_name }}</h2>
+            <div class="dropdown">
+                <button id="dropbtnfrom_{{ game.id }}" class="dropbtn">Select an option</button>
+                <div class="dropdown-content">
+                    {% for rank_id, rank_data in game.ranks.items %}
+                        <a id="rank_item_from{{ game.id }}_{{ rank_id }}_{{ rank_data.order }}" href="#" style="background-image: url('{{ rank_data.img }}');" data-rank-order="{{ rank_data.order }}">{{ rank_data.value }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="dropdown">
+                <button id="dropbtnto_{{ game.id }}" class="dropbtn">Select an option</button>
+                <div class="dropdown-content">
+                    {% for rank_id, rank_data in game.ranks.items %}
+                        <a id="rank_item_to{{ game.id }}_{{ rank_id }}_{{ rank_data.order }}" href="#" style="background-image: url('{{ rank_data.img }}');" data-rank-order="{{ rank_data.order }}">{{ rank_data.value }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <input type="number" placeholder="Boost value" class="game_input_value" id="value_input_{{ game.id }}">
+            <input  placeholder="Boost description" class="game_input_value" id="descr_input_{{ game.id }}">
+            <button class="buy-boost-button" data-game-id="{{ game.id }}">Buy boost</button>
+        </div>
+    {% endfor %}
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function handleDropdownEvent(event) {
+        var target = event.target;
+        var dropdown = target.closest('.dropdown');
+        var dropbtn = dropdown.querySelector('.dropbtn');
+
+        if (target.tagName === 'A') {
+            var rankOrder = target.getAttribute('data-rank-order');
+
+            if (target.style.backgroundImage !== 'none') {
+                dropbtn.style.backgroundImage = target.style.backgroundImage;
+            }
+
+            dropbtn.textContent = target.textContent;
+            dropbtn.classList.add('selected');
+            dropbtn.dataset.value = target.dataset.value;
+            dropbtn.dataset.valueOrder = rankOrder; // Установка значения атрибута data-value-order
+        }
+    }
+
+    document.querySelectorAll('.dropdown-content').forEach(function (dropdown) {
+        dropdown.addEventListener('input', handleDropdownEvent);
+    });
+
+    document.querySelectorAll('.dropdown-content a').forEach(function (item) {
+        item.addEventListener('click', handleDropdownEvent);
+    });
+});
+
+</script>
+
+
+<script>
+    // Function to open popup
+    function openPopup(popupId) {
+        var popup = document.getElementById(popupId);
+        if (popup) {
+            closeAllPopups();
+            popup.classList.add('open');
+            document.body.addEventListener('click', outsideClickHandler);
+        }
+    }
+    // Function to close popup
+    function closePopup(popupId) {
+        var popup = document.getElementById(popupId);
+        if (popup) {
+            popup.classList.remove('open');
+            var dropbtn = popup.querySelector('.dropbtn');
+            dropbtn.style.backgroundImage = '';
+            document.body.removeEventListener('click', outsideClickHandler);
+        }
+    }
+
+    // Function to close all popups
+    function closeAllPopups() {
+        var popups = document.querySelectorAll('.popup');
+        popups.forEach(function(popup) {
+            popup.classList.remove('open');
+        });
+    }
+
+    // Event handler to close the popup when clicking outside of it
+    function outsideClickHandler(event) {
+        var popups = document.querySelectorAll('.popup');
+        popups.forEach(function(popup) {
+            if (!popup.contains(event.target)) {
+                popup.classList.remove('open');
+            }
+        });
+    }
+
+    // Attach event listeners to each game block
+    var gameBlocks = document.querySelectorAll('.game_block');
+    gameBlocks.forEach(function(block) {
+        block.addEventListener('click',async function(event) {
+            var popupId = "popup_" + this.id;
+            openPopup(popupId);
+            event.stopPropagation();
+        });
+    });
+</script>
+<script>
+
+
+function validateBoostValue(gameId) {
+    const rankFromElement = document.querySelector(`#dropbtnfrom_${gameId}`);
+    const rankToElement = document.querySelector(`#dropbtnto_${gameId}`);
+    const rankFrom = rankFromElement ? parseInt(rankFromElement.dataset.valueOrder) : 0;
+    const rankTo = rankToElement ? parseInt(rankToElement.dataset.valueOrder) : 0;
+    const minValue = Math.abs(rankTo - rankFrom) * 10;
+    const boostValueElement = document.querySelector(`#value_input_${gameId}`);
+    const boostValue = parseInt(boostValueElement.value);
+
+    if (boostValue <= 0 || isNaN(boostValue) || boostValue < minValue) {
+        alert(`Boost value must be at least ${minValue}`);
+        return false;
+    }
+    return true;
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const buyBoostButtons = document.querySelectorAll('.buy-boost-button');
+    buyBoostButtons.forEach(function (button) {
+        button.addEventListener('click', async function (event) {
+            const gameId = this.dataset.gameId;
+
+             if (!validateBoostValue(gameId)) {
+                return;
+             }
+
+            const rankFromElement = document.querySelector(`#dropbtnfrom_${gameId}`);
+            const rankToElement = document.querySelector(`#dropbtnto_${gameId}`);
+            const rankFrom = rankFromElement ? rankFromElement.textContent : '';
+            const rankTo = rankToElement ? rankToElement.textContent : '';
+            const boostValue = document.querySelector(`#value_input_${gameId}`).value;
+            const boostDescription = document.querySelector(`#descr_input_${gameId}`).value;
+            const dataToSend = {
+                game_id: gameId,
+                rank_from: rankFrom,
+                rank_to: rankTo,
+                boost_value: boostValue,
+                boost_description: boostDescription,
+            };
+            const responseData = await SendDataToServer(dataToSend, '/buy-boost/');
+            if (responseData) {
+                closeAllPopups();
+                window.location.reload();
+            }
+        });
+    });
+});
+
+
+async function SendDataToServer(data, url) {
+    const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    console.log('Data to send:', data);
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+    return responseData;
+}
+</script>
+
+
+{% endblock main_content %}
+</body>
+</html>

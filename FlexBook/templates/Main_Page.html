@@ -1,0 +1,205 @@
+<!-- user_profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block head %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  {% load static %}
+  <style>
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #121212;
+        color: #f0f2f5;
+      }
+
+      form {
+        display: none;
+      }
+
+      .user-container {
+        display: flex;
+        min-height: 100vh;
+        align-items: stretch;
+      }
+
+      .left-sidebar {
+        width: 250px;
+        background-color: #202020;
+        box-shadow: 0 0 10px #0f0;
+        overflow-y: auto;
+      }
+
+      .left-sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .left-side-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        color: #ccc;
+      }
+
+      .left-side-item:hover {
+        background-color: #252525;
+        box-shadow: 0 0 20px 5px #A60000;
+      }
+
+      .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: #121212;
+        color: #f0f2f5;
+      }
+
+      .circle-menu {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: #202020;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 0 20px 5px #A60000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .circle-menu:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px 5px #A60000
+      }
+
+      .circle-menu img {
+        max-width: 100%;
+        border-radius: 50%;
+      }
+
+      .menu-popup {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        background-color: #202020;
+        border-radius: 8px;
+        padding: 10px;
+        z-index: 100;
+      }
+
+      .menu-popup.active {
+        display: block;
+      }
+
+      .menu-item {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        color: #ccc;
+      }
+
+      .menu-item:hover {
+        background-color: #252525;
+        box-shadow: 0 0 20px 5px #A60000
+      }
+
+      .menu-item:last-child {
+        border-bottom: none;
+      }
+  </style>
+  {% endblock %}
+</head>
+<body>
+    <form>
+      {% csrf_token %}
+    </form>
+<div class="user-container">
+  <div class="left-sidebar">
+    <ul>
+      <li class="left-side-item" id="main">Main</li>
+      <li class="left-side-item" id="games">Games</li>
+      <li class="left-side-item" id="history">History</li>
+      <li class="left-side-item" id="messenger">Messenger</li>
+      <li class="left-side-item" id="news">News</li>
+      {% if booster %}
+        <li class="left-side-item" id="orders">Orders</li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <div class="main-content">
+    {% block main_content %}{% endblock %}
+  </div>
+</div>
+
+<div class="circle-menu" id="circleMenuElement">
+  <div class="menu-popup" id="menuPopupElement">
+    <div class="menu-item" id="profile">{{user.username}}</div>
+    <div class="menu-item" id="settings">Settings</div>
+    <div class="menu-item" id="log_out">Exit</div>
+    {% if user.is_superuser %}
+      <div class="menu-item" id="admin">Admin</div>
+    {% endif %}
+  </div>
+  {% if user.user_profile_pictures %}
+    <img src="{{ user.user_profile_pictures.url }}" alt="{{ user.username }}" width="50">
+  {% else %}
+    <img src="{% static 'Server_image/default_profile_image.webp' %}" alt="Default Profile Picture" width="50">
+  {% endif %}
+
+</div>
+<script>
+  const circleMenuElement = document.getElementById('circleMenuElement');
+  const menuPopupElement = document.getElementById('menuPopupElement');
+
+  circleMenuElement.addEventListener('click', () => {
+    menuPopupElement.classList.toggle('active');
+  });
+</script>
+{% if booster %}
+    <script>
+        function redirect(id, link){
+          document.getElementById(id).addEventListener('click',() =>{
+            window.location.href = link
+          })
+          }
+        redirect('orders','/orders_page')
+    </script>
+    {% endif %}
+<script>
+  function redirect(id, link){
+  document.getElementById(id).addEventListener('click',() =>{
+    window.location.href = link
+  })
+  }
+  redirect('log_out','/log_out')
+  redirect('settings','/settings')
+  redirect('profile','/profile')
+  redirect('main','/')
+  redirect('games','/games_page')
+  redirect('messenger','/messenger_page')
+  redirect('history','/history_page ')
+  redirect('news','/news_page')
+  try {
+     redirect('admin',/admin/)
+  }catch(error){}
+
+
+</script>
+
+
+
+
+</body>
+</html>

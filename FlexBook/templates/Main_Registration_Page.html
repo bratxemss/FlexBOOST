@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlexBook Registration</title>
+  {% load static %}
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .background-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url("/static/Server_images/Registration_image.jpg") center/cover no-repeat;
+      filter: blur(5px);
+      z-index: -1;
+    }
+    #Registration{
+      display: none;
+    }
+    .RegContainer{
+      position: absolute;
+      top: 50%;
+      left: 20%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+      z-index: 1;
+    }
+    .Container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+      z-index: 1;
+      display: block;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input::placeholder {
+      color: #999;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #Registration_link {
+        color: navy;
+        text-decoration: none;
+    }
+
+    #Registration_link:hover {
+        text-decoration: underline;
+        color: dodgerblue;
+        cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+<div class="background-container"></div>
+  <div class="Container" id="Login">
+    <h1>FlexBook</h1>
+    <form action="{% url 'login_button' %}" method="post">
+      {% csrf_token %}
+      <input name="L_email" type="email" placeholder="Email" required>
+      <input name="L_password" type="password" placeholder="Password" required>
+      <button type="submit">Log In</button>
+      <br>
+      <br>
+      <div id="Registration_link">Registration</div>
+    </form>
+  </div>
+
+<div class="RegContainer" id ="Registration">
+  <h1>FlexBook Registration</h1>
+  <form action="{% url 'register_button' %}" method="post">
+    {% csrf_token %}
+    <input name="username" type="text" placeholder="Username" required>
+    <input name="email" type="email" placeholder="Email" required>
+    <input name="password1" type="password" placeholder="Password" required>
+    <input name="password2" type="password" placeholder="Confirm Password">
+    <button type="submit">Register</button>
+  </form>
+</div>
+<script>
+  document.getElementById("Registration_link").addEventListener('click', () => {
+    var popupMenu = document.getElementById("Registration");
+    popupMenu.style.display = (popupMenu.style.display === "block") ? "none" : "block";
+  });
+</script>
+
+
+</body>
+</html>

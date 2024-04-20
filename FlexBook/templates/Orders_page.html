@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% extends 'Main_Page.html' %}
+    {% block head %}
+        {{ block.super }}
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #f0f0f0;
+            }
+            main {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .order_block {
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                background-size: cover;
+                background-position: center;
+                text-align: center;
+                color: #ffffff;
+                overflow: hidden;
+                transition: transform 0.3s ease;
+                position: relative;
+                cursor: pointer;
+                width: 20%;
+
+            }
+             .value {
+                position: absolute;
+                bottom: 5px;
+                left: 5px;
+            }
+            .order_block:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0 20px 5px #A60000
+            }
+            h2 {
+                margin-top: 0;
+                font-size: 24px;
+            }
+            p {
+                margin: 10px 0;
+                font-size: 18px;
+            }
+            .popup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white; /* Цвет текста */
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Тень */
+                z-index: 9999;
+                max-width: 80%; /* Максимальная ширина */
+                max-height: 80%; /* Максимальная высота */
+                overflow-y: auto; /* Вертикальная прокрутка при необходимости */
+                background-color: rgba(0, 0, 0, 0.8); /* Цвет фона */
+            }
+
+            .order_block .rank_value {
+                width: 65px;
+                height: 40px;
+                margin: 3%;
+                border-radius: 5px;
+                border: 2px solid #ffffff;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Стили для текста рангов */
+            .order_block .rank_text {
+                font-size: 16px;
+                font-weight: bold
+                color: #ffffff;
+            }
+            .orders_container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start; /* Выравнивание контейнера по левому краю */
+                flex-direction: row; /* Устанавливаем направление в горизонтальное */
+                gap: 20px; /* Отступы между элементами */
+            }
+
+            .popup_element {
+                font-size: 16px;
+                color: #ffffff; /* Белый цвет текста */
+                margin-bottom: 15px; /* Больший отступ снизу */
+            }
+
+            .popup_accept_button {
+                padding: 10px 20px; /* Поля кнопки */
+                font-size: 16px;
+                color: #ffffff; /* Белый цвет текста */
+                background-color: #007bff; /* Цвет фона кнопки */
+                border: none; /* Убираем границу */
+                border-radius: 5px; /* Скругляем углы */
+                cursor: pointer; /* Изменяем курсор при наведении */
+                transition: background-color 0.3s; /* Плавный переход */
+            }
+
+            .popup_accept_button:hover {
+                background-color: #0056b3; /* Цвет фона при наведении */
+            }
+
+        </style>
+    {% endblock head %}
+</head>
+<body>
+<main>
+    {% block main_content %}
+    <div class="orders_container">
+    {% for order in Orders %}
+        <div id="{{ order.id }}" class="order_block" style="background-image: url('{{ order.GameRankAssociation.game.game_img.url }}');">
+            <h2>{{ order.GameRankAssociation.game.game_name }}</h2>
+            <p>Client: {{ order.client.user.username }}</p>
+            <p>
+                <img class="rank_value" src="{{ order.GameRankAssociation.from_rank.rank_img.url }}" alt="From Rank">
+                to
+                <img class="rank_value"  src="{{ order.GameRankAssociation.to_rank.rank_img.url }}" alt="To Rank">
+            </p>
+            <p>{{ order.order_payment_description }}</p>
+            <p class="value">{{ order.order_payment_value}}</p>
+        </div>
+        <div id="popup_{{ order.id }}" class="popup">
+            <h2>{{ order.GameRankAssociation.game.game_name }}</h2>
+            <p class = "popup_element" id = "popup_client_{{ order.id }}">{{ order.client.user.username }}</p>
+            <p class = "popup_element" id = "popup_payment_{{ order.id }}">{{ order.order_payment_value}}</p>
+            <p class = "popup_element" id = "popup_description_{{ order.id }}">{{ order.order_payment_description }}</p>
+            <button class = "popup_accept_button" id = "Accept_order_{{ order.id }}"> Accept Order </button>
+        </div>
+    {% endfor %}
+    </div>
+  <script>
+        function openPopup(popupId) {
+            var popup = document.getElementById(popupId);
+            if (popup) {
+                closeAllPopups();
+                popup.style.display = "block";
+                document.body.addEventListener('click', outsideClickHandler);
+            }
+        }
+
+        function closePopup(popupId) {
+            var popup = document.getElementById(popupId);
+            if (popup) {
+                popup.style.display = "none";
+                // Remove event listener when the popup is closed
+                document.body.removeEventListener('click', outsideClickHandler);
+            }
+        }
+
+        function closeAllPopups() {
+            var popups = document.querySelectorAll('.popup');
+            popups.forEach(function(popup) {
+                popup.style.display = "none";
+            });
+        }
+
+        function outsideClickHandler(event) {
+            var popups = document.querySelectorAll('.popup');
+            popups.forEach(function(popup) {
+                if (!popup.contains(event.target)) {
+                    popup.style.display = "none";
+                }
+            });
+        }
+
+        var gameBlocks = document.querySelectorAll('.order_block');
+        gameBlocks.forEach(function(block) {
+            block.addEventListener('click', function(event) {
+                var popupId = "popup_" + this.id;
+                openPopup(popupId);
+                event.stopPropagation();
+            });
+        });
+  </script>
+  <script>
+    async function SendDataToServer(data, url) {
+        const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        console.log('Data to send:', data);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json();
+        return responseData;
+    }
+      document.addEventListener('DOMContentLoaded', function() {
+        var acceptButtons = document.querySelectorAll('.popup_accept_button');
+
+        acceptButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var orderId = this.id.split('_')[2];
+                var paymentValue = document.getElementById('popup_payment_' + orderId).textContent;
+                var paymentDescription = document.getElementById('popup_description_' + orderId).textContent;
+                var paymentClient = document.getElementById('popup_client_' + orderId).textContent;
+
+                var data = {
+                    order_id: orderId,
+                    payment_value: paymentValue,
+                    payment_description: paymentDescription,
+                    payment_client: paymentClient
+                };
+
+                var url = '/accept_order/';
+
+                SendDataToServer(data, url)
+                    .then(function(responseData) {
+                        console.log('Server response:', responseData);
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    });
+  </script>
+</main>
+{% endblock main_content %}
+</body>
+</html>

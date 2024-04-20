@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% extends 'Main_Page.html' %}
+    {% block head %}
+        {{ block.super }}
+         <style>
+            @keyframes fadeIn {
+                0% {opacity: 0;}
+                100% {opacity: 1;}
+            }
+            @keyframes scaleIn {
+                0% {transform: scale(0);}
+                100% {transform: scale(1);}
+            }
+            body {
+              font-family: 'Arial', sans-serif;
+              margin: 0;
+              padding: 0;
+              overflow: hidden; /* Запретим прокрутку фона при открытом popup */
+              background-color: #f4f4f4; /* Добавим фоновый цвет */
+            }
+
+            header {
+              background-color: #4CAF50;
+              color: white;
+              padding: 20px; /* Увеличим отступы */
+              text-align: center;
+            }
+
+            main {
+              position: relative;
+              max-width: 800px;
+              margin: 20px auto;
+              padding: 20px;
+              background-color: #grey
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Добавим тень */
+              animation: fadeIn 1s ease-in;
+            }
+
+            h1 {
+              color: #333;
+            }
+
+            .user-details {
+              display: flex;
+              align-items: center;
+              margin-bottom: 20px;
+            }
+
+            .user-details img {
+              border-radius: 50%;
+              margin-right: 15px; /* Увеличим отступ */
+            }
+
+            .user-info {
+              flex-grow: 1;
+
+            }
+
+            .user-info h2 {
+              margin: 0;
+              color: #333; /* Цвет заголовка */
+            }
+
+            .user-info p {
+              margin: 5px 0;
+              color: #666; /* Цвет текста */
+            }
+
+            .menu_btn {
+              background-color: #FF6347;
+              color: white;
+              padding: 12px 20px; /* Увеличим отступы */
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              transition: background-color 0.3s ease; /* Плавное изменение цвета */
+            }
+
+            .menu_btn:hover {
+              background-color: #d9534f; /* Цвет при наведении */
+            }
+
+            #popup-menu-container.active {
+              display: block;
+            }
+            #popup-menu-container {
+              display: none;
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.6); /* Полупрозрачный черный фон */
+              z-index: 2;
+              backdrop-filter: blur(4px); /* Размытие фона */
+              justify-content: center;
+              align-items: center;
+            }
+
+            #popup-menu {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: grey;
+              padding: 40px; /* Увеличим внутренний отступ */
+              border-radius: 8px;
+              box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Тень для глубины */
+              max-width: 600px; /* Увеличим максимальную ширину */
+              width: 100%;
+              text-align: center;
+            }
+
+            #popup-menu h2 {
+              color: #333;
+            }
+
+            #popup-menu form {
+              margin-top: 20px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+
+            #popup-menu input {
+              width: 100%;
+              padding: 10px;
+              margin-bottom: 10px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+            }
+
+            #popup-menu button {
+              background-color: #4CAF50;
+              color: white;
+              padding: 12px 20px;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              transition: background-color 0.3s ease;
+            }
+
+            #popup-menu button:hover {
+              background-color: #45a049;
+            }
+          </style>
+    {% endblock %}
+</head>
+<body>
+{% block main_content %}
+<main>
+    <div class="user-details" id="base-menu">
+      <img src="{{ user.user_profile_pictures.url }}" alt="{{ user.username }}" width="80">
+      <div class="user-info">
+        <h2>{{username}}</h2>
+        <p class="user_data">Name: {{first_name}} {{second_name}}</p>
+        <p class="user_data">Email: {{email}}</p>
+        <p class="user_data">Registration data: {{reg_data}}</p>
+        <p class="user_data">Birth day: {{birth_day}}</p>
+        <p class="user_data">Age: {{age}}</p>
+
+      </div>
+    </div>
+    <a href="log_out"><button class="menu_btn" id="logout-btn">Log out</button></a>
+    <button class="menu_btn" id="change-btn">Change data</button>
+
+    <div id="popup-menu-container" onclick="closePopup()">
+      <div id="popup-menu" class="user-details" onclick="preventClose(event)">
+        <img src="{{ user.user_profile_pictures.url }}" alt="{{ user.username }}" width="80">
+        <h2>{{username}}</h2>
+        <form method="post" action="{% url 'user_data_save' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+              <p class="user_data">Name: <input name="new_name" type="text" id="inputName"
+                  value="{{first_name}} {{second_name}}"></p>
+              <p class="user_data">Email: <input name="new_email" type="email" id="inputEmail" value="{{email}}"></p>
+              <p class="user_data">Birthday: <input name="new_birthday" type="date" id="inputBirthday"
+                  value="{{birth_day}}"></p>
+              <p class="user_data">Profile picture: <input name="user_profile_picture" type="file" accept="image/*"></p>
+              <button type="submit" onclick="updateUserData()">OK</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function change_click() {
+        var popupMenuContainer = document.getElementById("popup-menu-container");
+        popupMenuContainer.classList.toggle("active");
+      }
+
+      function closePopup() {
+        var popupMenuContainer = document.getElementById("popup-menu-container");
+        if (popupMenuContainer.classList.contains("active")) {
+          popupMenuContainer.classList.remove("active");
+        }
+      }
+
+      function preventClose(event) {
+        event.stopPropagation();
+      }
+
+      function updateUserData() {
+        var inputName = document.getElementById("inputName").value;
+        var inputEmail = document.getElementById("inputEmail").value;
+        var inputBirthday = document.getElementById("inputBirthday").value;
+
+        closePopup();
+      }
+
+      document.getElementById("change-btn").addEventListener("click", function (event) {
+        event.stopPropagation();
+        change_click();
+      });
+
+      document.addEventListener("click", function (event) {
+        var popupMenuContainer = document.getElementById("popup-menu-container");
+        if (popupMenuContainer.classList.contains("active") &&
+          event.target !== popupMenuContainer &&
+          !popupMenuContainer.contains(event.target)) {
+          closePopup();
+        }
+      });
+    </script>
+  </main>
+{% endblock main_content %}
+</body>
+
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% extends 'Main_Page.html' %}
+    {% block head %}
+        {{ block.super }}
+        <style>
+             body {
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+             /* Общие стили для блока сообщений */
+            .message_box {
+                width: 300px;
+                margin-bottom: 10px;
+                padding: 10px;
+                cursor: pointer;
+            }
+            .message_box:hover{
+                box-shadow: 0 0 20px 5px #A60000
+            }
+
+
+            /* Стили для аватара пользователя */
+            .avatar {
+                display: flex;
+                align-items: center;
+            }
+
+            .avatar .avatar_image {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background-size: cover;
+                background-position: center;
+            }
+
+            .avatar .name {
+                margin-left: 10px;
+                font-weight: bold;
+            }
+
+            .preview{
+                margin: 10px 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 15ch; /* Максимальное количество символов */
+            }
+
+            /* Стили для блока чата */
+            .popup_chat {
+                display: none;
+                position: fixed;
+                top: 4%;
+                bottom: 4%;
+                right: 15%;
+                width: 50%;
+                background-color: #grey;
+                border-left: 1px solid #ccc;
+                border-radius: 15px 0 0 15px;
+                overflow: auto;
+                padding: 20px;
+                box-sizing: border-box;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease-in-out;
+                cursor: default;
+
+            }
+            .message-sender-avatar {
+                order: -1;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background-size: cover;
+                background-position: center;
+                margin-right: 10px;
+            }
+
+            .message-sender{
+                font-weight: bold;
+            }
+
+            .message-content {
+                margin: 10px 0;
+            }
+
+            .message-timestamp {
+                font-size: 0.8em;
+                color: #999;
+            }
+
+            .input_container {
+                position: sticky;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 5%;
+                background-color: #grey;
+                display: flex;
+            }
+
+            .input_field {
+                flex-grow: 1;
+                margin-right: 10px;
+                padding: 5px;
+                width: calc(100% - 100px);
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .send_button {
+                padding: 5px 10px;
+                background-color: #A60000;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        </style>
+    {% endblock head %}
+</head>
+<body>
+{% block main_content %}
+<main>
+    {% for chat_key, messages in user_messages.items %}
+        <div class="message_box" id="message_box_{{ chat_key.0.user.username }}_{{ chat_key.1.user.username }}">
+            <div class="avatar" id="avatar_{{ chat_key.0.user.username }}_{{ chat_key.1.user.username }}">
+                <div class="avatar_image" style="background-image: url('{{ chat_key.0.user.user_profile_pictures.url }}');"></div>
+
+                <div class="name">{{ chat_key.0.user.username }}</div>
+                {% with messages|last as last %}
+                    <div class="preview">{{ last.content }}</div>
+                {% endwith %}
+            </div>
+            <div class="popup_chat" id="popup_chat_with_{{ chat_key.0.user.username }}">
+                <div class="chat" id = "chat_with_{{ chat_key.0.user.username }}">
+                    {% for message in messages %}
+                        <div class="message{% if message.is_sent_by_user %}-sent-by-user{% endif %}">
+                            <div class="message-sender-avatar" style="background-image: url('{% if message.is_sent_by_user %}{{ chat_key.1.user.user_profile_pictures.url }}{% else %}{{ chat_key.0.user.user_profile_pictures.url }}{% endif %}');"></div>
+                            <div class="message-sender">{{ message.sender }}</div>
+                            <div class="message-content">{{ message.content }}</div>
+                            <div class="message-timestamp">{{ message.timestamp }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="input_container">
+                    <input type="text" id="input_field_to_{{ chat_key.0.user.username }}" class="input_field" placeholder="Message...">
+                    <button class="send_button" id="send_button_to_{{ chat_key.0.user.username }}">Send</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</main>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageBoxes = document.querySelectorAll('.message_box');
+        messageBoxes.forEach(messageBox => {
+            const popupChat = messageBox.querySelector('.popup_chat');
+            messageBox.addEventListener('click', () => {
+                messageBoxes.forEach(box => {
+                    const popup = box.querySelector('.popup_chat');
+                    if (popup !== popupChat) {
+                        popup.style.display = 'none';
+                    }
+                });
+                popupChat.style.display = popupChat.style.display === 'none' ? 'block' : 'none';
+                popupChat.scrollTop = popupChat.scrollHeight;
+            });
+            popupChat.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        });
+    });
+</script>
+
+<script>
+    async function SendDataToServer(data, url) {
+        const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        console.log('Data to send:', data);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json();
+        return responseData;
+    }
+
+document.addEventListener('DOMContentLoaded', function() {
+    var acceptButtons = document.querySelectorAll('.send_button');
+    var inputFields = document.querySelectorAll('.input_field');
+
+    acceptButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var secondName = this.id.split('_')[3];
+            sendMessage(secondName);
+        });
+    });
+
+    inputFields.forEach(function(inputField) {
+        inputField.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && inputField.value.trim() !== '') {
+                var secondName = inputField.id.split('_')[3];
+                sendMessage(secondName);
+            }
+        });
+    });
+
+    function sendMessage(secondName) {
+        if (!secondName) {
+            console.error('Missing secondName argument');
+            return;
+        }
+
+        var message = document.getElementById('input_field_to_' + secondName).value;
+        var data = {
+            second_name: secondName,
+            message_value: message,
+        };
+        var url = '/send_message/';
+        var inputvalue = document.getElementById('input_field_to_' + secondName);
+        inputvalue.value = '';
+        SendDataToServer(data, url)
+            .then(function(responseData) {
+                console.log('Server response:', responseData);
+                if (responseData.success) {
+                    var chatContent = document.getElementById('chat_with_' + secondName);
+                    var popupChat = document.getElementById('popup_chat_with_' + secondName);
+
+                    if (chatContent) {
+                        var messageHTML = `
+                            <div class="message">
+                                <div class="message-sender-avatar" style="background-image: url('${responseData.data.sender_avatar_url}');"></div>
+                                <div class="message-sender">${responseData.data.sender_username}</div>
+                                <div class="message-content">${message}</div>
+                                <div class="message-timestamp">${responseData.data.message_timestamp}</div>
+                            </div>`;
+                        chatContent.insertAdjacentHTML('beforeend', messageHTML);
+                        popupChat.scrollTop = chatContent.scrollHeight;
+
+                    } else {
+                        console.error('Element with id chat_with_' + responseData.data.sender_username + ' not found');
+                    }
+                } else {
+                    console.error('Server response indicates failure');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+    }
+});
+
+</script>
+
+
+{% endblock main_content %}
+</body>
+</html>
