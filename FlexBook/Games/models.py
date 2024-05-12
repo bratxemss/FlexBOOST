@@ -15,7 +15,7 @@ class Game(models.Model):
         default="None")
     game_img = models.ImageField(
         upload_to=game_profile_picture_path,
-        default='D:\pythonProject\ProjectDjango\FlexBook\static\Server_images\sticker.webp',
+        default=r'D:\pythonProject\ProjectDjango\FlexBook\static\Server_images\sticker.webp',
         blank=True,
         null=True)
 
@@ -29,7 +29,7 @@ class Rank(models.Model):
     order = models.IntegerField(default=0)
     rank_img = models.ImageField(
         upload_to=game_rank_picture_path,
-        default='D:\pythonProject\ProjectDjango\FlexBook\static\Server_images\sticker.webp',
+        default=r'D:\pythonProject\ProjectDjango\FlexBook\static\Server_images\sticker.webp',
         blank=True,
         null=True)
 
