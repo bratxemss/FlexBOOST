@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('birth_day', models.DateTimeField(default=django.utils.timezone.now)),
                 ('age', models.IntegerField(default=0)),
                 ('banned', models.BooleanField(default=False)),
-                ('user_profile_pictures', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\sticker.webp', null=True, upload_to=Users.models.user_profile_picture_path)),
+                ('user_profile_pictures', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\default_profile_image.webp', null=True, upload_to=Users.models.user_profile_picture_path)),
                 ('timezone', timezone_field.fields.TimeZoneField(default='UTC')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),

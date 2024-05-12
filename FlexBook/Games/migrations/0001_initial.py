@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('game_name', models.CharField(default='None', max_length=50)),
-                ('game_img', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\sticker.webp', null=True, upload_to=Games.models.game_profile_picture_path)),
+                ('game_img', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\default_profile_image.webp', null=True, upload_to=Games.models.game_profile_picture_path)),
             ],
         ),
         migrations.CreateModel(
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('rank_value', models.CharField(max_length=50)),
                 ('order', models.IntegerField(default=0)),
-                ('rank_img', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\sticker.webp', null=True, upload_to=Games.models.game_rank_picture_path)),
+                ('rank_img', models.ImageField(blank=True, default='D:\\pythonProject\\ProjectDjango\\FlexBook\\static\\Server_images\\default_profile_image.webp', null=True, upload_to=Games.models.game_rank_picture_path)),
                 ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Games.game')),
             ],
             options={

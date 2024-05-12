@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
     age = models.IntegerField(default=0)
     banned = models.BooleanField(default=False)
     user_profile_pictures = models.ImageField(upload_to=user_profile_picture_path,
-                                               default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static\Server_images\sticker.webp',
+                                               default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp',
                                                blank=True,
                                                null=True)
     timezone = TimeZoneField(default='UTC')

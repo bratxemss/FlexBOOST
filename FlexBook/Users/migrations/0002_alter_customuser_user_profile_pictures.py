@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='customuser',
             name='user_profile_pictures',
-            field=models.ImageField(blank=True, default='D:\\Work\\Python\\Flex\\FlexBOOST\\FlexBook\\static\\Server_images\\sticker.webp', null=True, upload_to=Users.models.user_profile_picture_path),
+            field=models.ImageField(blank=True, default='D:\\Work\\Python\\Flex\\FlexBOOST\\FlexBook\\static\\Server_images\\default_profile_image.webp', null=True, upload_to=Users.models.user_profile_picture_path),
         ),
     ]
