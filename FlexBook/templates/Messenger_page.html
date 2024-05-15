@@ -124,11 +124,11 @@
 <body>
 {% block main_content %}
 <main>
+    {% load static %}
     {% for chat_key, messages in user_messages.items %}
         <div class="message_box" id="message_box_{{ chat_key.0.user.username }}_{{ chat_key.1.user.username }}">
             <div class="avatar" id="avatar_{{ chat_key.0.user.username }}_{{ chat_key.1.user.username }}">
                 <div class="avatar_image" style="background-image: url('{{ chat_key.0.user.user_profile_pictures.url }}');"></div>
-
                 <div class="name">{{ chat_key.0.user.username }}</div>
                 {% with messages|last as last %}
                     <div class="preview">{{ last.content }}</div>
@@ -153,7 +153,6 @@
         </div>
     {% endfor %}
 </main>
-
 
 
 <script>
@@ -237,16 +236,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     var popupChat = document.getElementById('popup_chat_with_' + secondName);
 
                     if (chatContent) {
-                        var messageHTML = `
-                            <div class="message">
-                                <div class="message-sender-avatar" style="background-image: url('${responseData.data.sender_avatar_url}');"></div>
-                                <div class="message-sender">${responseData.data.sender_username}</div>
-                                <div class="message-content">${message}</div>
-                                <div class="message-timestamp">${responseData.data.message_timestamp}</div>
-                            </div>`;
+                        if (responseData.data.sender_avatar_url){
+                            var messageHTML = `
+                                <div class="message">
+                                    <div class="message-sender-avatar" style="background-image: url('${responseData.data.sender_avatar_url}');"></div>
+                                    <div class="message-sender">${responseData.data.sender_username}</div>
+                                    <div class="message-content">${message}</div>
+                                    <div class="message-timestamp">${responseData.data.message_timestamp}</div>
+                                </div>`;
+                        }else{
+                            var defaultAvatarUrl = "{% static 'Server_images/default_profile_image.webp' %}";
+                            var messageHTML = `
+                                <div class="message">
+                                    <div class="message-sender-avatar" style="background-image: url('${defaultAvatarUrl}');"></div>
+                                    <div class="message-sender">${responseData.data.sender_username}</div>
+                                    <div class="message-content">${message}</div>
+                                    <div class="message-timestamp">${responseData.data.message_timestamp}</div>
+                                </div>`;
+                        }
                         chatContent.insertAdjacentHTML('beforeend', messageHTML);
                         popupChat.scrollTop = chatContent.scrollHeight;
-
                     } else {
                         console.error('Element with id chat_with_' + responseData.data.sender_username + ' not found');
                     }

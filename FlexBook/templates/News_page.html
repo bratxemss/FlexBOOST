@@ -5,14 +5,69 @@
     {% block head %}
         {{ block.super }}
          <style>
+            /* Стили для контейнера новостей */
+            .news-container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+            }
+
+            /* Стили для отдельной новости */
+            .news-item {
+                margin-bottom: 20px;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 5px;
+            }
+
+            /* Заголовок новости */
+            .news-title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            /* Текст новости */
+            .news-text {
+                font-size: 16px;
+                color: #666;
+                margin-bottom: 10px;
+            }
+
+            /* Изображение новости */
+            .news-image {
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
+
+            /* Дата публикации новости */
+            .news-date {
+                font-size: 14px;
+                color: #999;
+            }
          </style>
         {% endblock %}
 </head>
 <body>
 {% block main_content %}
-<main>
-  <script>
-  </script>
+<main class="news-container">
+    {% for news in News %}
+        <div class="news-item">
+            <h2 class="news-title">{{ news.title }}</h2>
+            <p class="news-text">{{ news.text }}</p>
+            {% if news.img %}
+                <img class="news-image" src="{{ news.img.url }}" alt="Изображение">
+            {% endif %}
+            <p class="news-date">Дата публикации: {{ news.timestamp }}</p>
+        </div>
+    {% endfor %}
 </main>
 {% endblock %}
 </body>

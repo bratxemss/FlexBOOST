@@ -5,8 +5,7 @@ from .verification import user_valid, user_is_buster
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect
 from Users.user_services import get_current_user
-from Users.models import CustomUser,GameOrder
-from Games.models import Game
+from Users.models import CustomUser,GameOrder, Orders,Client
 
 
 @login_required
@@ -54,7 +53,8 @@ def profile_page(request,**kwargs):
 @user_valid
 @login_required
 def history_page(request, **kwargs):
-    return render(request, 'History_page.html',{**kwargs})
+    history = Orders.objects.filter(client=Client.objects.get(user = request.user))
+    return render(request, 'History_page.html',{"History": history, **kwargs})
 
 
 @user_is_buster

@@ -21,9 +21,7 @@ class CustomUser(AbstractUser):
     age = models.IntegerField(default=0)
     banned = models.BooleanField(default=False)
     user_profile_pictures = models.ImageField(upload_to=user_profile_picture_path,
-                                               default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp',
-                                               blank=True,
-                                               null=True)
+                                               default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp')
     timezone = TimeZoneField(default='UTC')
 
     def __str__(self):
@@ -55,7 +53,7 @@ class Payment(models.Model):
 class Orders(models.Model):
     client = models.ForeignKey(Client, related_name='client_orders', on_delete=models.CASCADE)
     booster = models.ForeignKey(Client, related_name='booster_orders', on_delete=models.CASCADE)
-    order_data = models.DateTimeField(default=timezone.now)
+    order_data = models.DateTimeField(auto_now_add=True)
     order_status = models.CharField(max_length=50,default="Pending")
     order_payment_data = models.ForeignKey(Payment, on_delete=models.CASCADE)
 
