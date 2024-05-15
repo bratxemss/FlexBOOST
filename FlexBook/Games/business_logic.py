@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
-from Users.models import Client,CustomUser,GameOrder
+from Users.models import Client,CustomUser,GameOrder,Payment,Orders
 from .models import Game,Rank,GameRankAssociation
 from Messages.models import Message
 
@@ -72,6 +72,10 @@ def accept_order(request):
             content = (f"Hi, im {sender.user.username}, and i take you order with id {order_id}."
                        f" Order value is {payment_value}"
                        f" Order description is {payment_description}")
+            Pay_order = Payment(amount=order.order_payment_value)
+            Pay_order.save()
+            Main_order = Orders(client=sender,booster=receiver,order_payment_data=Pay_order)
+            Main_order.save()
             order.delete()
             message = Message(sender=sender,receiver=receiver,content=content)
             message.save()

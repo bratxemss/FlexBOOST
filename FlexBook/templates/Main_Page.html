@@ -132,7 +132,7 @@
       <li class="left-side-item" id="history">History</li>
       <li class="left-side-item" id="messenger">Messenger</li>
       <li class="left-side-item" id="news">News</li>
-      {% if booster %}
+      {% if booster or user.is_superuser %}
         <li class="left-side-item" id="orders">Orders</li>
       {% endif %}
     </ul>
@@ -167,7 +167,7 @@
     menuPopupElement.classList.toggle('active');
   });
 </script>
-{% if booster %}
+{% if booster or user.is_superuser%}
     <script>
         function redirect(id, link){
           document.getElementById(id).addEventListener('click',() =>{

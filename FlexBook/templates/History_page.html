@@ -11,6 +11,15 @@
 <body>
 {% block main_content %}
 <main>
+    {% for item in History %}
+        <div class="user_history">
+            <div>{{item.client}}</div>
+            <div>{{item.booster}}</div>
+            <div>{{item.order_data}}</div>
+            <div>{{item.order_status}}</div>
+            <div>{{item.order_payment_data.amount}}</div>
+        </div>
+    {% endfor %}
   <script>
   </script>
 </main>

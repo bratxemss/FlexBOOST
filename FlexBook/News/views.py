@@ -8,6 +8,5 @@ from Users.verification import user_is_buster, user_valid
 @user_valid
 @login_required
 def news_page(request,**kwargs):
-
-    print(News.objects.get())
-    return render(request, 'News_page.html',{**kwargs})
+    news = reversed(News.objects.all())
+    return render(request, 'News_page.html',{"News": news, **kwargs})

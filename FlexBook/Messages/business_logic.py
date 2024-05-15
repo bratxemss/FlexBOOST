@@ -20,10 +20,17 @@ def send_message(request):
             new_message = Message.objects.create(sender=current_user, receiver=second_user, content=message, timestamp=current_time_utc)
             message_timestamp = timezone.localtime(new_message.timestamp, second_user.user.timezone)
             timestamp = message_timestamp.strftime("(%d.%m) %H:%M:%S")
-            return JsonResponse({'success': True, 'data': {
-                'message_timestamp': timestamp,
-                'sender_username': current_user.user.username,
-                'sender_avatar_url': current_user.user.user_profile_pictures.url,
-            }})
+            if current_user.user.user_profile_pictures:
+                return JsonResponse({'success': True, 'data': {
+                    'message_timestamp': timestamp,
+                    'sender_username': current_user.user.username,
+                    'sender_avatar_url': current_user.user.user_profile_pictures,
+                }})
+            else:
+                return JsonResponse({'success': True, 'data': {
+                    'message_timestamp': timestamp,
+                    'sender_username': current_user.user.username,
+                    'sender_avatar_url': None,
+                }})
         else:
             return JsonResponse({'success': False})
