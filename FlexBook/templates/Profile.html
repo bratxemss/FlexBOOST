@@ -14,7 +14,6 @@
                 100% {transform: scale(1);}
             }
             body {
-              font-family: 'Arial', sans-serif;
               margin: 0;
               padding: 0;
               overflow: hidden; /* Запретим прокрутку фона при открытом popup */
@@ -51,8 +50,13 @@
             }
 
             .user-details img {
-              border-radius: 50%;
-              margin-right: 15px; /* Увеличим отступ */
+                order: -1;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background-size: cover;
+                background-position: center;
+                margin-right: 10px;
             }
 
             .user-info {
