@@ -5,7 +5,7 @@ from django.core.validators import MaxValueValidator,MinValueValidator
 from djmoney.models.fields import MoneyField
 from timezone_field import TimeZoneField
 from Games.models import Game,GameRankAssociation
-
+from FlexBook.settings import DEFAULT_IMAGE
 
 def user_profile_picture_path(instance, filename):
     return f'profile_pics/{instance.username}/{filename}'
@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
     age = models.IntegerField(default=0)
     banned = models.BooleanField(default=False)
     user_profile_pictures = models.ImageField(upload_to=user_profile_picture_path,
-                                               default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp')
+                                               default=DEFAULT_IMAGE)
     timezone = TimeZoneField(default='UTC')
 
     def __str__(self):

@@ -5,53 +5,48 @@
     {% block head %}
         {{ block.super }}
          <style>
-            /* Стили для контейнера новостей */
-            .news-container {
-                max-width: 800px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: #fff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                border-radius: 10px;
-            }
+         .news-container {
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #121212;
+            color: #f0f2f5;
+            margin-left: 250px; /* Исправьте это значение, если нужно */
+        }
 
-            /* Стили для отдельной новости */
-            .news-item {
-                margin-bottom: 20px;
-                padding: 20px;
-                background-color: #f9f9f9;
-                border-radius: 5px;
-            }
+        .news-item {
+            margin-top: 30px;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            background-color: #252525;
+            box-shadow: 0 0 20px 5px #A60000;
+        }
 
-            /* Заголовок новости */
-            .news-title {
-                font-size: 24px;
-                font-weight: bold;
-                color: #333;
-                margin-bottom: 10px;
-            }
+        .news-item:hover {
 
-            /* Текст новости */
-            .news-text {
-                font-size: 16px;
-                color: #666;
-                margin-bottom: 10px;
-            }
+        }
 
-            /* Изображение новости */
-            .news-image {
-                max-width: 100%;
-                height: auto;
-                display: block;
-                margin-bottom: 10px;
-                border-radius: 5px;
-            }
+        .news-title {
+            color: #ccc;
+            margin-top: 0;
+        }
 
-            /* Дата публикации новости */
-            .news-date {
-                font-size: 14px;
-                color: #999;
-            }
+        .news-text {
+            color: #ccc;
+        }
+
+        .news-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .news-date {
+            color: #ccc;
+            margin-bottom: 0;
+        }
+    </style>
          </style>
         {% endblock %}
 </head>

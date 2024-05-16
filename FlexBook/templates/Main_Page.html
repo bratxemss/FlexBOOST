@@ -29,8 +29,11 @@
       .left-sidebar {
         width: 250px;
         background-color: #202020;
-        box-shadow: 0 0 10px #0f0;
+        box-shadow: 0 0 10px #A60000;
         overflow-y: auto;
+        position: fixed;
+        top: 0;
+        bottom: 0;
       }
 
       .left-sidebar ul {
@@ -58,6 +61,8 @@
         overflow-y: auto;
         background-color: #121212;
         color: #f0f2f5;
+        margin-left: 250px;
+        padding: 20px;
       }
 
       .circle-menu {
@@ -82,8 +87,12 @@
       }
 
       .circle-menu img {
-        max-width: 100%;
-        border-radius: 50%;
+            order: -1;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
       }
 
       .menu-popup {
@@ -127,7 +136,6 @@
 <div class="user-container">
   <div class="left-sidebar">
     <ul>
-      <li class="left-side-item" id="main">Main</li>
       <li class="left-side-item" id="games">Games</li>
       <li class="left-side-item" id="history">History</li>
       <li class="left-side-item" id="messenger">Messenger</li>
@@ -146,7 +154,6 @@
 <div class="circle-menu" id="circleMenuElement">
   <div class="menu-popup" id="menuPopupElement">
     <div class="menu-item" id="profile">{{user.username}}</div>
-    <div class="menu-item" id="settings">Settings</div>
     <div class="menu-item" id="log_out">Exit</div>
     {% if user.is_superuser %}
       <div class="menu-item" id="admin">Admin</div>
@@ -184,9 +191,7 @@
   })
   }
   redirect('log_out','/log_out')
-  redirect('settings','/settings')
   redirect('profile','/profile')
-  redirect('main','/')
   redirect('games','/games_page')
   redirect('messenger','/messenger_page')
   redirect('history','/history_page ')

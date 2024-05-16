@@ -140,7 +140,7 @@
                         <div class="message{% if message.is_sent_by_user %}-sent-by-user{% endif %}">
                             <div class="message-sender-avatar" style="background-image: url('{% if message.is_sent_by_user %}{{ chat_key.1.user.user_profile_pictures.url }}{% else %}{{ chat_key.0.user.user_profile_pictures.url }}{% endif %}');"></div>
                             <div class="message-sender">{{ message.sender }}</div>
-                            <div class="message-content">{{ message.content }}</div>
+                            <div class="message-content"> {{ message.content }}</div>
                             <div class="message-timestamp">{{ message.timestamp }}</div>
                         </div>
                     {% endfor %}
@@ -160,6 +160,7 @@
         const messageBoxes = document.querySelectorAll('.message_box');
         messageBoxes.forEach(messageBox => {
             const popupChat = messageBox.querySelector('.popup_chat');
+            popupChat.style.display = 'none';
             messageBox.addEventListener('click', () => {
                 messageBoxes.forEach(box => {
                     const popup = box.querySelector('.popup_chat');

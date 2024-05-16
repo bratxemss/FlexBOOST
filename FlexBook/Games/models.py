@@ -1,5 +1,5 @@
 from django.db import models
-
+from FlexBook.settings import DEFAULT_IMAGE
 
 def game_profile_picture_path(instance, filename):
     return f'game_pics/{instance.game_name}/{filename}'
@@ -15,7 +15,7 @@ class Game(models.Model):
         default="None")
     game_img = models.ImageField(
         upload_to=game_profile_picture_path,
-        default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp',
+        default=DEFAULT_IMAGE,
         blank=True,
         null=True)
 
@@ -29,7 +29,7 @@ class Rank(models.Model):
     order = models.IntegerField(default=0)
     rank_img = models.ImageField(
         upload_to=game_rank_picture_path,
-        default=r'D:\Work\Python\Flex\FlexBOOST\FlexBook\static_root\Server_images\default_profile_image.webp',
+        default=DEFAULT_IMAGE,
         blank=True,
         null=True)
 

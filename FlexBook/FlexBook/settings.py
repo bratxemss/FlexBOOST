@@ -139,3 +139,4 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 AUTH_USER_MODEL = 'Users.CustomUser'
 LOGIN_URL = ''
+DEFAULT_IMAGE = 'static_root/Server_images/default_profile_image.webp'
